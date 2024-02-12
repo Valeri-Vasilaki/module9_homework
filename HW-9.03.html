@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XHR Request</title>
+  </head>
+  <body>
+    <label for="numberInput">Введите число от 1 до 10: </label>
+    <input type="number" id="numberInput" min="1" max="10" />
+    <button onclick="makeRequest()">Отправить запрос</button>
+
+    <div id="result"></div>
+
+    <script>
+      function makeRequest() {
+        const inputElement = document.getElementById("numberInput");
+        const inputValue = parseInt(inputElement.value, 10);
+
+        if (isNaN(inputValue) || inputValue < 1 || inputValue > 10) {
+          document.getElementById("result").innerText =
+            "Число вне диапазона от 1 до 10";
+          return;
+        }
+
+        const xhr = new XMLHttpRequest();
+        const url = `https://jsonplaceholder.typicode.com/photos?_limit=${inputValue}`;
+
+        xhr.open("GET", url, true);
+
+        xhr.onload = function () {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            const response = JSON.parse(xhr.responseText);
+            displayImages(response);
+          } else {
+            document.getElementById("result").innerText =
+              "Ошибка при получении данных";
+          }
+        };
+
+        xhr.onerror = function () {
+          document.getElementById("result").innerText =
+            "Ошибка при отправке запроса";
+        };
+
+        xhr.send();
+      }
+
+      function displayImages(data) {
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = ""; // Очистим содержимое перед отображением новых данных
+
+        data.forEach((photo) => {
+          const imgElement = document.createElement("img");
+          imgElement.src = photo.thumbnailUrl;
+          resultDiv.appendChild(imgElement);
+        });
+      }
+    </script>
+  </body>
+</html>

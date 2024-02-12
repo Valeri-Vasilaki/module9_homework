@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fetch Request</title>
+  </head>
+  <body>
+    <label for="widthInput">Введите ширину (от 100 до 300): </label>
+    <input type="number" id="widthInput" min="100" max="300" />
+
+    <label for="heightInput">Введите высоту (от 100 до 300): </label>
+    <input type="number" id="heightInput" min="100" max="300" />
+
+    <button onclick="makeFetchRequest()">Отправить запрос</button>
+
+    <div id="result"></div>
+
+    <script>
+      function makeFetchRequest() {
+        const widthInput = document.getElementById("widthInput");
+        const heightInput = document.getElementById("heightInput");
+
+        const widthValue = parseInt(widthInput.value, 10);
+        const heightValue = parseInt(heightInput.value, 10);
+
+        if (
+          isNaN(widthValue) ||
+          isNaN(heightValue) ||
+          widthValue < 100 ||
+          widthValue > 300 ||
+          heightValue < 100 ||
+          heightValue > 300
+        ) {
+          document.getElementById("result").innerText =
+            "Одно из чисел вне диапазона от 100 до 300";
+          return;
+        }
+
+        const imageUrl = `https://dummyimage.com/${widthValue}x${heightValue}/`;
+
+        fetch(imageUrl)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Ошибка при получении данных");
+            }
+            return response.blob();
+          })
+          .then((blob) => {
+            displayImage(blob);
+          })
+          .catch((error) => {
+            document.getElementById("result").innerText = error.message;
+          });
+      }
+
+      function displayImage(blob) {
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = ""; // Очистим содержимое перед отображением нового изображения
+
+        const imgElement = document.createElement("img");
+        imgElement.src = URL.createObjectURL(blob);
+        resultDiv.appendChild(imgElement);
+      }
+    </script>
+  </body>
+</html>
